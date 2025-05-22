@@ -1,0 +1,44 @@
+<!--pages/removebg/removebg.wxml-->
+<view class="container">
+  <view class="tool-section">
+    <view class="section-title">选择图片</view>
+    <view class="image-container">
+      <image 
+        wx:if="{{tempFilePath}}" 
+        src="{{tempFilePath}}" 
+        mode="aspectFit" 
+        class="preview-image"
+      ></image>
+      <view wx:else class="empty-image" bindtap="chooseImage">
+        <text class="icon">+</text>
+        <text>点击选择图片</text>
+      </view>
+    </view>
+    <button bindtap="chooseImage" class="action-button">选择图片</button>
+  </view>
+
+  <view class="tool-section" wx:if="{{tempFilePath}}">
+    <view class="section-title">去除背景</view>
+    <view class="tips">
+      <text>提示：选择包含清晰物体的图片效果更佳</text>
+    </view>
+    <button bindtap="removeBackground" class="action-button" loading="{{isProcessing}}">
+      开始抠图
+    </button>
+  </view>
+
+  <view class="tool-section result-section" wx:if="{{resultPath}}">
+    <view class="section-title">处理结果</view>
+    <view class="images-compare">
+      <view class="compare-item">
+        <text>原图</text>
+        <image src="{{tempFilePath}}" mode="aspectFit"></image>
+      </view>
+      <view class="compare-item">
+        <text>抠图结果</text>
+        <image src="{{resultPath}}" mode="aspectFit" class="transparent-bg"></image>
+      </view>
+    </view>
+    <button bindtap="saveImage" class="action-button primary">保存图片</button>
+  </view>
+</view> 

@@ -1,0 +1,85 @@
+<!--pages/recognize/recognize.wxml-->
+<view class="container">
+  <view class="tool-section">
+    <view class="section-title">选择图片</view>
+    <view class="image-container">
+      <image 
+        wx:if="{{tempFilePath}}" 
+        src="{{tempFilePath}}" 
+        mode="aspectFit" 
+        class="preview-image"
+      ></image>
+      <view wx:else class="empty-image" bindtap="chooseImage">
+        <text class="icon">+</text>
+        <text>点击选择图片</text>
+      </view>
+    </view>
+    <button bindtap="chooseImage" class="action-button">选择图片</button>
+  </view>
+
+  <view class="tool-section" wx:if="{{tempFilePath}}">
+    <view class="section-title">识别类型</view>
+    <view class="type-selector">
+      <view 
+        wx:for="{{recognitionTypes}}" 
+        wx:key="id"
+        class="type-item {{item.selected ? 'selected' : ''}}"
+        bindtap="selectType"
+        data-id="{{item.id}}"
+      >
+        <text>{{item.name}}</text>
+      </view>
+    </view>
+    <button bindtap="startRecognition" class="action-button" loading="{{isProcessing}}">
+      开始识别
+    </button>
+  </view>
+
+  <view class="tool-section result-section" wx:if="{{recognitionResult}}">
+    <view class="section-title">识别结果</view>
+    
+    <!-- OCR文字识别结果 -->
+    <block wx:if="{{recognitionResult.type === 'ocr'}}">
+      <view class="result-text-box">
+        <text user-select="true">{{recognitionResult.text}}</text>
+      </view>
+      <button bindtap="copyResult" class="action-button">复制文本</button>
+    </block>
+    
+    <!-- 物体识别结果 -->
+    <block wx:elif="{{recognitionResult.type === 'object'}}">
+      <view class="object-list">
+        <view wx:for="{{recognitionResult.objects}}" wx:key="index" class="object-item">
+          <text class="object-name">{{item.name}}</text>
+          <view class="confidence-bar-bg">
+            <view class="confidence-bar" style="width: {{item.confidence * 100}}%"></view>
+          </view>
+          <text class="confidence-value">{{item.confidence * 100}}%</text>
+        </view>
+      </view>
+    </block>
+    
+    <!-- 人脸识别结果 -->
+    <block wx:elif="{{recognitionResult.type === 'face'}}">
+      <view class="face-result">
+        <view class="face-count">
+          <text>检测到 {{recognitionResult.faces.count}} 个人脸</text>
+        </view>
+        <view class="face-attributes">
+          <view class="attribute-item">
+            <text class="attribute-label">性别：</text>
+            <text class="attribute-value">{{recognitionResult.faces.attributes.gender}}</text>
+          </view>
+          <view class="attribute-item">
+            <text class="attribute-label">年龄：</text>
+            <text class="attribute-value">{{recognitionResult.faces.attributes.age}}</text>
+          </view>
+          <view class="attribute-item">
+            <text class="attribute-label">表情：</text>
+            <text class="attribute-value">{{recognitionResult.faces.attributes.expression}}</text>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+</view> 

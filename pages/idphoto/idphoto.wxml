@@ -1,0 +1,72 @@
+<!--pages/idphoto/idphoto.wxml-->
+<view class="container">
+  <view class="tool-section">
+    <view class="section-title">选择图片</view>
+    <view class="image-container">
+      <image 
+        wx:if="{{tempFilePath}}" 
+        src="{{tempFilePath}}" 
+        mode="aspectFit" 
+        class="preview-image"
+      ></image>
+      <view wx:else class="empty-image" bindtap="chooseImage">
+        <text class="icon">+</text>
+        <text>点击选择图片</text>
+      </view>
+    </view>
+    <button bindtap="chooseImage" class="action-button">选择图片</button>
+  </view>
+
+  <view class="tool-section" wx:if="{{tempFilePath}}">
+    <view class="section-title">证件照规格</view>
+    <view class="spec-selector">
+      <view 
+        wx:for="{{photoSpecs}}" 
+        wx:key="id"
+        class="spec-item {{item.selected ? 'selected' : ''}}"
+        bindtap="selectSpec"
+        data-id="{{item.id}}"
+      >
+        <text class="spec-name">{{item.name}}</text>
+        <text class="spec-size">{{item.width}}x{{item.height}}px</text>
+      </view>
+    </view>
+    
+    <view class="section-title" style="margin-top: 30rpx;">背景颜色</view>
+    <view class="color-selector">
+      <view 
+        wx:for="{{bgColors}}" 
+        wx:key="color"
+        class="color-item {{item.selected ? 'selected' : ''}}"
+        bindtap="selectBgColor"
+        data-color="{{item.color}}"
+        style="background-color: {{item.color}}"
+      >
+        <text>{{item.name}}</text>
+      </view>
+    </view>
+    
+    <button bindtap="generatePhoto" class="action-button" loading="{{isProcessing}}">
+      生成证件照
+    </button>
+  </view>
+
+  <view class="tool-section result-section" wx:if="{{resultPath}}">
+    <view class="section-title">生成结果</view>
+    <view class="id-photo-container">
+      <image src="{{resultPath}}" mode="aspectFit" class="id-photo"></image>
+    </view>
+    <view class="photo-info">
+      <text class="info-item">
+        规格：{{currentSpecName}}
+      </text>
+      <text class="info-item">
+        尺寸：{{currentSpecWidth}}x{{currentSpecHeight}}px
+      </text>
+      <text class="info-item">
+        背景：{{currentBgName}}
+      </text>
+    </view>
+    <button bindtap="saveImage" class="action-button primary">保存图片</button>
+  </view>
+</view> 

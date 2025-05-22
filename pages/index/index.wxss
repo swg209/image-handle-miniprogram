@@ -1,0 +1,88 @@
+/**index.wxss**/
+page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f7f7f7;
+}
+
+.scrollarea {
+  flex: 1;
+  overflow-y: hidden;
+}
+
+.container {
+  padding: 30rpx;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 60rpx;
+}
+
+.title {
+  font-size: 46rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.subtitle {
+  font-size: 28rpx;
+  color: #999;
+}
+
+.function-list {
+  display: flex;
+  flex-direction: column;
+  gap: 30rpx;
+}
+
+.function-item {
+  display: flex;
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
+  transition: all 0.3s;
+}
+
+.function-item:active {
+  background-color: #f0f0f0;
+  transform: scale(0.98);
+}
+
+.function-icon {
+  width: 100rpx;
+  height: 100rpx;
+  margin-right: 30rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.function-icon image {
+  width: 80rpx;
+  height: 80rpx;
+}
+
+.function-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.function-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.function-desc {
+  font-size: 26rpx;
+  color: #999;
+} 

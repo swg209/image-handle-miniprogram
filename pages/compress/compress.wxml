@@ -1,0 +1,69 @@
+<!--pages/compress/compress.wxml-->
+<view class="container">
+  <view class="tool-section">
+    <view class="section-title">选择图片</view>
+    <view class="image-container">
+      <image 
+        wx:if="{{tempFilePath}}" 
+        src="{{tempFilePath}}" 
+        mode="aspectFit" 
+        class="preview-image"
+      ></image>
+      <view wx:else class="empty-image" bindtap="chooseImage">
+        <text class="icon">+</text>
+        <text>点击选择图片</text>
+      </view>
+    </view>
+    <button bindtap="chooseImage" class="action-button">选择图片</button>
+  </view>
+
+  <view class="tool-section" wx:if="{{tempFilePath}}">
+    <view class="section-title">压缩质量</view>
+    <view class="slider-container">
+      <text class="slider-text">低质量</text>
+      <slider 
+        bindchange="sliderChange" 
+        min="10" 
+        max="90" 
+        value="{{compressQuality}}" 
+        show-value
+      ></slider>
+      <text class="slider-text">高质量</text>
+    </view>
+    <button bindtap="compressImage" class="action-button" loading="{{isProcessing}}">
+      开始压缩
+    </button>
+  </view>
+
+  <view class="tool-section result-section" wx:if="{{compressedPath}}">
+    <view class="section-title">压缩结果</view>
+    <view class="result-info">
+      <view class="info-item">
+        <text class="info-label">原始大小：</text>
+        <text class="info-value">{{originalSize / 1024}} KB</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">压缩后大小：</text>
+        <text class="info-value">{{compressedSize / 1024}} KB</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">压缩率：</text>
+        <text class="info-value">{{100 - (compressedSize / originalSize * 100)}}%</text>
+      </view>
+    </view>
+    <view class="images-compare">
+      <view class="compare-item">
+        <text>原图</text>
+        <image src="{{tempFilePath}}" mode="aspectFit"></image>
+      </view>
+      <view class="compare-item">
+        <text>压缩后</text>
+        <image src="{{compressedPath}}" mode="aspectFit"></image>
+      </view>
+    </view>
+    <button bindtap="saveImage" class="action-button primary">保存图片</button>
+  </view>
+
+  <!-- 用于图片压缩的画布 -->
+  <canvas type="2d" id="compressCanvas" class="hidden-canvas"></canvas>
+</view> 
