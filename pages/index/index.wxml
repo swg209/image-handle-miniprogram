@@ -15,6 +15,7 @@
           <text class="function-title">图片压缩</text>
           <text class="function-desc">压缩图片大小，保持画质</text>
         </view>
+        <view class="function-arrow"></view>
       </view>
       
       <view class="function-item" bindtap="navigateTo" data-page="removebg">
@@ -25,6 +26,7 @@
           <text class="function-title">抠图去背景</text>
           <text class="function-desc">智能分离前景与背景</text>
         </view>
+        <view class="function-arrow"></view>
       </view>
       
       <view class="function-item" bindtap="navigateTo" data-page="recognize">
@@ -35,6 +37,7 @@
           <text class="function-title">图片识别</text>
           <text class="function-desc">识别图片中的文字和内容</text>
         </view>
+        <view class="function-arrow"></view>
       </view>
       
       <view class="function-item" bindtap="navigateTo" data-page="idphoto">
@@ -45,7 +48,18 @@
           <text class="function-title">证件照制作</text>
           <text class="function-desc">快速生成标准证件照</text>
         </view>
+        <view class="function-arrow"></view>
       </view>
+    </view>
+    
+    <view class="footer">
+      <view class="decorative-dots">
+        <view class="dot dot-1"></view>
+        <view class="dot dot-2"></view>
+        <view class="dot dot-3"></view>
+        <view class="dot dot-4"></view>
+      </view>
+      <text class="copyright">© 2025 图片处理工具箱</text>
     </view>
   </view>
 </scroll-view>

@@ -17,7 +17,7 @@ Page({
     };
 
     if (routes[page]) {
-      wx.navigateTo({
+    wx.navigateTo({
         url: routes[page]
       });
     }
@@ -30,5 +30,5 @@ Page({
     wx.setNavigationBarTitle({
       title: '图片处理工具箱'
     });
-  }
+      }
 }) 

@@ -1,69 +1,137 @@
 <!--pages/compress/compress.wxml-->
 <view class="container">
-  <view class="tool-section">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="page-title">图片压缩</view>
+    <view class="page-subtitle">轻松压缩图片，节省空间</view>
+  </view>
+
+  <!-- 图片选择区域 -->
+  <view class="tool-section upload-section">
+    <view class="section-icon">
+      <!-- 临时移除图标引用 -->
+    </view>
     <view class="section-title">选择图片</view>
-    <view class="image-container">
+    <view class="image-container" bindtap="chooseImage">
       <image 
         wx:if="{{tempFilePath}}" 
         src="{{tempFilePath}}" 
         mode="aspectFit" 
-        class="preview-image"
+        class="preview-image animation-fade-in"
       ></image>
-      <view wx:else class="empty-image" bindtap="chooseImage">
-        <text class="icon">+</text>
-        <text>点击选择图片</text>
+      <view wx:else class="empty-image">
+        <view class="upload-icon">
+          <view class="upload-icon-plus">+</view>
+        </view>
+        <text class="upload-text">点击选择图片</text>
       </view>
     </view>
-    <button bindtap="chooseImage" class="action-button">选择图片</button>
   </view>
 
-  <view class="tool-section" wx:if="{{tempFilePath}}">
-    <view class="section-title">压缩质量</view>
-    <view class="slider-container">
-      <text class="slider-text">低质量</text>
+  <!-- 压缩质量设置区域 -->
+  <view class="tool-section compression-section {{tempFilePath ? 'animation-slide-up' : 'hidden'}}" wx:if="{{tempFilePath}}">
+    <view class="quality-selection">
+      <view class="section-title">压缩质量</view>
+      <view class="quality-desc">拖动滑块调整压缩质量，数值越低压缩率越高</view>
+
+      <view class="quality-indicator">
+        <view class="quality-label">低质量</view>
+        <view class="quality-value">{{compressQuality}}%</view>
+        <view class="quality-label">高质量</view>
+      </view>
+
       <slider 
         bindchange="sliderChange" 
         min="10" 
         max="90" 
         value="{{compressQuality}}" 
-        show-value
+        activeColor="#1aad19"
+        backgroundColor="#e9e9e9"
+        block-size="24"
+        block-color="#1aad19"
       ></slider>
-      <text class="slider-text">高质量</text>
+
+      <view class="compression-info">
+        <view class="info-item">
+          <view class="info-icon file-size-icon"></view>
+          <view class="info-text">
+            <text class="info-label">原始大小：</text>
+            <text class="info-value">{{originalSizeKB}} KB</text>
+          </view>
+        </view>
+      </view>
+
+      <button bindtap="compressImage" class="action-button compress-button {{isProcessing ? 'processing' : ''}}" disabled="{{isProcessing}}">
+        <view class="button-content">
+          <view class="loading-spinner" wx:if="{{isProcessing}}"></view>
+          <text>{{isProcessing ? '压缩中...' : '开始压缩'}}</text>
+        </view>
+      </button>
     </view>
-    <button bindtap="compressImage" class="action-button" loading="{{isProcessing}}">
-      开始压缩
-    </button>
   </view>
 
-  <view class="tool-section result-section" wx:if="{{compressedPath}}">
+  <!-- 压缩结果展示区域 -->
+  <view class="tool-section result-section {{compressedPath ? 'animation-slide-up' : 'hidden'}}" wx:if="{{compressedPath}}">
     <view class="section-title">压缩结果</view>
+    <view class="success-indicator">
+      <view class="success-icon"></view>
+      <text>压缩成功</text>
+    </view>
+
+    <!-- 结果统计信息 -->
     <view class="result-info">
-      <view class="info-item">
-        <text class="info-label">原始大小：</text>
-        <text class="info-value">{{originalSize / 1024}} KB</text>
+      <view class="info-row">
+        <view class="info-item">
+          <text class="info-label">原始大小</text>
+          <text class="info-value">{{originalSizeKB}} KB</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">压缩后大小</text>
+          <text class="info-value compressed-size">{{compressedSizeKB}} KB</text>
+        </view>
       </view>
-      <view class="info-item">
-        <text class="info-label">压缩后大小：</text>
-        <text class="info-value">{{compressedSize / 1024}} KB</text>
-      </view>
-      <view class="info-item">
-        <text class="info-label">压缩率：</text>
-        <text class="info-value">{{100 - (compressedSize / originalSize * 100)}}%</text>
+      
+      <view class="compression-rate">
+        <text class="rate-label">压缩率</text>
+        <view class="rate-value-container">
+          <text class="rate-value">{{compressionRate}}%</text>
+          <view class="rate-bar-container">
+            <view class="rate-bar" style="width: {{compressionRate}}%"></view>
+          </view>
+        </view>
       </view>
     </view>
+
+    <!-- 图片对比区域 -->
     <view class="images-compare">
+      <view class="tap-hint">点击图片可查看大图</view>
       <view class="compare-item">
-        <text>原图</text>
-        <image src="{{tempFilePath}}" mode="aspectFit"></image>
+        <text class="compare-label">原图</text>
+        <image src="{{tempFilePath}}" mode="aspectFit" class="compare-image" bindtap="previewImage" data-src="{{tempFilePath}}"></image>
       </view>
+      <view class="compare-divider"></view>
       <view class="compare-item">
-        <text>压缩后</text>
-        <image src="{{compressedPath}}" mode="aspectFit"></image>
+        <text class="compare-label">压缩后</text>
+        <image src="{{compressedPath}}" mode="aspectFit" class="compare-image" bindtap="previewImage" data-src="{{compressedPath}}"></image>
       </view>
     </view>
-    <button bindtap="saveImage" class="action-button primary">保存图片</button>
+
+    <!-- 保存按钮区域 -->
+    <button bindtap="saveImage" class="action-button save-button prominent-button">
+      <view class="button-content">
+        <view class="save-icon"></view>
+        <text>保存到相册</text>
+      </view>
+    </button>
+    
+    <view class="save-hint">
+      点击上方按钮将压缩后的图片保存到手机相册
+    </view>
   </view>
 
+  <!-- 滚动指示器 -->
+  <view class="scroll-indicator" wx:if="{{compressedPath}}"></view>
+  
   <!-- 用于图片压缩的画布 -->
   <canvas type="2d" id="compressCanvas" class="hidden-canvas"></canvas>
 </view> 

@@ -4,6 +4,9 @@ Page({
     compressedPath: '', // 压缩后的图片路径
     originalSize: 0, // 原始大小
     compressedSize: 0, // 压缩后大小
+    originalSizeKB: '0', // 格式化后的原始大小(KB)
+    compressedSizeKB: '0', // 格式化后的压缩大小(KB)
+    compressionRate: '0', // 格式化后的压缩率
     compressQuality: 80, // 默认压缩质量
     isProcessing: false, // 是否处理中
     maxImageSize: 1280 // 最大图片尺寸
@@ -24,11 +27,30 @@ Page({
         this.setData({
           tempFilePath,
           originalSize,
+          originalSizeKB: this.formatFileSize(originalSize),
           compressedPath: '',
-          compressedSize: 0
+          compressedSize: 0,
+          compressedSizeKB: '0',
+          compressionRate: '0'
         });
       }
     });
+  },
+
+  /**
+   * 格式化文件大小
+   */
+  formatFileSize(size) {
+    return (size / 1024).toFixed(1);
+  },
+
+  /**
+   * 计算压缩率
+   */
+  calculateCompressionRate(originalSize, compressedSize) {
+    if (originalSize <= 0) return '0';
+    const rate = 100 - (compressedSize / originalSize * 100);
+    return rate.toFixed(1);
   },
 
   /**
@@ -121,11 +143,28 @@ Page({
                             wx.getFileInfo({
                               filePath: lowerResult.tempFilePath,
                               success: (lowerSizeRes) => {
+                                const compressedSize = lowerSizeRes.size;
+                                const compressionRate = this.calculateCompressionRate(
+                                  this.data.originalSize, 
+                                  compressedSize
+                                );
+                                
                                 this.setData({
                                   compressedPath: lowerResult.tempFilePath,
-                                  compressedSize: lowerSizeRes.size,
+                                  compressedSize: compressedSize,
+                                  compressedSizeKB: this.formatFileSize(compressedSize),
+                                  compressionRate: compressionRate,
                                   isProcessing: false
                                 });
+                                
+                                console.log('二次压缩成功，路径:', lowerResult.tempFilePath);
+                                wx.showToast({
+                                  title: '压缩成功',
+                                  icon: 'success'
+                                });
+
+                                // 滚动到结果区域
+                                this.scrollToResult();
                               },
                               fail: (err) => {
                                 this.handleCompressionError('获取文件信息失败');
@@ -138,11 +177,28 @@ Page({
                         });
                       } else {
                         // 正常情况：压缩成功且大小减小
+                        const compressedSize = sizeRes.size;
+                        const compressionRate = this.calculateCompressionRate(
+                          this.data.originalSize, 
+                          compressedSize
+                        );
+                        
                         this.setData({
                           compressedPath: result.tempFilePath,
-                          compressedSize: sizeRes.size,
+                          compressedSize: compressedSize,
+                          compressedSizeKB: this.formatFileSize(compressedSize),
+                          compressionRate: compressionRate,
                           isProcessing: false
                         });
+                        
+                        console.log('压缩成功，路径:', result.tempFilePath);
+                        wx.showToast({
+                          title: '压缩成功',
+                          icon: 'success'
+                        });
+
+                        // 滚动到结果区域
+                        this.scrollToResult();
                       }
                     },
                     fail: (err) => {
@@ -187,6 +243,8 @@ Page({
    * 保存图片
    */
   saveImage() {
+    console.log('尝试保存图片，路径:', this.data.compressedPath);
+    
     if (!this.data.compressedPath) {
       wx.showToast({
         title: '请先压缩图片',
@@ -205,11 +263,56 @@ Page({
       },
       fail: (err) => {
         console.error('保存失败', err);
+        
+        // 处理不同类型的保存失败情况
+        let errorMessage = '保存失败';
+        
+        if (err.errMsg.indexOf('auth deny') >= 0 || err.errMsg.indexOf('authorize') >= 0) {
+          errorMessage = '未获得保存权限，请在设置中允许访问相册';
+          // 尝试引导用户打开设置页
+          wx.showModal({
+            title: '需要授权',
+            content: '需要获取保存到相册的权限，是否打开设置页？',
+            success(res) {
+              if (res.confirm) {
+                wx.openSetting({
+                  success(settingRes) {
+                    console.log('设置页打开成功', settingRes);
+                  }
+                });
+              }
+            }
+          });
+          return;
+        }
+        
         wx.showToast({
-          title: '保存失败',
-          icon: 'none'
+          title: errorMessage,
+          icon: 'none',
+          duration: 2000
         });
       }
+    });
+  },
+
+  /**
+   * 预览图片
+   */
+  previewImage(e) {
+    const current = e.currentTarget.dataset.src;
+    const urls = [];
+    
+    if (this.data.tempFilePath) {
+      urls.push(this.data.tempFilePath);
+    }
+    
+    if (this.data.compressedPath) {
+      urls.push(this.data.compressedPath);
+    }
+    
+    wx.previewImage({
+      current: current, // 当前显示图片的链接
+      urls: urls // 需要预览的图片链接列表
     });
   },
 
@@ -220,5 +323,25 @@ Page({
     wx.setNavigationBarTitle({
       title: '图片压缩'
     });
+  },
+
+  /**
+   * 滚动到结果区域
+   */
+  scrollToResult() {
+    // 延迟执行，确保DOM已更新
+    setTimeout(() => {
+      wx.createSelectorQuery()
+        .select('.result-section')
+        .boundingClientRect(rect => {
+          if (rect) {
+            wx.pageScrollTo({
+              scrollTop: rect.top - 20,
+              duration: 300
+            });
+          }
+        })
+        .exec();
+    }, 300);
   }
 }) 
