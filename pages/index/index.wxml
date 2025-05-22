@@ -1,51 +1,76 @@
 <!--index.wxml-->
-<scroll-view class="scrollarea" scroll-y type="list">
-  <view class="container">
-    <view class="header">
-      <text class="title">图片处理工具箱</text>
-      <text class="subtitle">一站式图片处理解决方案</text>
+<view class="page-container">
+  <!-- 加载动画 -->
+  <view class="loading-container" wx:if="{{isLoading}}">
+    <view class="loading-spinner"></view>
+  </view>
+  
+  <!-- 主内容 -->
+  <block wx:else>
+    <!-- 顶部渐变背景 -->
+    <view class="gradient-header">
+      <view class="header-content">
+        <view class="app-title">图片处理工具箱</view>
+        <view class="app-subtitle">一站式图片处理解决方案</view>
+      </view>
+      
+      <!-- 装饰元素 -->
+      <view class="floating-shapes">
+        <view class="shape shape-1"></view>
+        <view class="shape shape-2"></view>
+        <view class="shape shape-3"></view>
+      </view>
     </view>
     
-    <view class="function-list">
-      <view class="function-item" bindtap="navigateTo" data-page="compress">
-        <view class="function-icon">
-          <image src="/images/compress.png" mode="aspectFit"></image>
+    <!-- 功能区域 -->
+    <view class="card-container">
+      <!-- 工具卡片区域 -->
+      <view class="tools-section">
+        <view class="section-title">
+          <text class="section-title-text">工具集</text>
+          <view class="title-line"></view>
         </view>
-        <view class="function-info">
-          <text class="function-title">图片压缩</text>
-          <text class="function-desc">压缩图片大小，保持画质</text>
-        </view>
-      </view>
-      
-      <view class="function-item" bindtap="navigateTo" data-page="removebg">
-        <view class="function-icon">
-          <image src="/images/removebg.png" mode="aspectFit"></image>
-        </view>
-        <view class="function-info">
-          <text class="function-title">抠图去背景</text>
-          <text class="function-desc">智能分离前景与背景</text>
-        </view>
-      </view>
-      
-      <view class="function-item" bindtap="navigateTo" data-page="recognize">
-        <view class="function-icon">
-          <image src="/images/recognize.png" mode="aspectFit"></image>
-        </view>
-        <view class="function-info">
-          <text class="function-title">图片识别</text>
-          <text class="function-desc">识别图片中的文字和内容</text>
+        
+        <view class="tools-grid">
+          <!-- 使用tools数组动态渲染 -->
+          <view class="tool-card" wx:for="{{tools}}" wx:key="id" bindtap="navigateTo" data-page="{{item.id}}">
+            <view class="tool-icon-container {{item.class}}">
+              <image class="tool-icon" src="{{item.icon}}" mode="aspectFit"></image>
+            </view>
+            <view class="tool-info">
+              <text class="tool-title">{{item.title}}</text>
+              <text class="tool-desc">{{item.description}}</text>
+            </view>
+          </view>
         </view>
       </view>
       
-      <view class="function-item" bindtap="navigateTo" data-page="idphoto">
-        <view class="function-icon">
-          <image src="/images/idphoto.png" mode="aspectFit"></image>
+      <!-- 使用提示卡片 -->
+      <view class="tips-card">
+        <view class="tips-header">
+          <view class="tips-title">使用提示</view>
+          <view class="tips-icon">💡</view>
         </view>
-        <view class="function-info">
-          <text class="function-title">证件照制作</text>
-          <text class="function-desc">快速生成标准证件照</text>
+        <view class="tips-content">
+          <view class="tip-item">
+            <view class="tip-dot"></view>
+            <text class="tip-text">选择需要的功能，上传图片即可处理</text>
+          </view>
+          <view class="tip-item">
+            <view class="tip-dot"></view>
+            <text class="tip-text">处理后的图片可保存至相册</text>
+          </view>
+          <view class="tip-item">
+            <view class="tip-dot"></view>
+            <text class="tip-text">使用高清图片获得更好效果</text>
+          </view>
         </view>
       </view>
     </view>
-  </view>
-</scroll-view>
+    
+    <!-- 底部信息 -->
+    <view class="footer">
+      <text class="footer-text">© 2025 图片处理工具箱</text>
+    </view>
+  </block>
+</view>
