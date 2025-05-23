@@ -26,14 +26,14 @@ Page({
     console.log('chooseImage函数被调用');
     const that = this;
     
-    wx.chooseImage({
+    wx.chooseMedia({
       count: 1,
-      sizeType: ['compressed'],
+      mediaType: ['image'],
       sourceType: ['album', 'camera'],
       success: function (res) {
-        console.log('选择图片成功', res.tempFilePaths[0]);
+        console.log('选择图片成功', res.tempFiles[0].tempFilePath);
         that.setData({
-          tempFilePath: res.tempFilePaths[0],
+          tempFilePath: res.tempFiles[0].tempFilePath,
           resultPath: '' // 清空之前的结果
         });
       },

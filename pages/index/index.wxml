@@ -3,6 +3,7 @@
   <!-- 加载动画 -->
   <view class="loading-container" wx:if="{{isLoading}}">
     <view class="loading-spinner"></view>
+    <view class="loading-text">加载中...</view>
   </view>
   
   <!-- 主内容 -->
@@ -19,6 +20,7 @@
         <view class="shape shape-1"></view>
         <view class="shape shape-2"></view>
         <view class="shape shape-3"></view>
+        <view class="shape shape-4"></view>
       </view>
     </view>
     
@@ -33,9 +35,12 @@
         
         <view class="tools-grid">
           <!-- 使用tools数组动态渲染 -->
-          <view class="tool-card" wx:for="{{tools}}" wx:key="id" bindtap="navigateTo" data-page="{{item.id}}">
-            <view class="tool-icon-container {{item.class}}">
-              <image class="tool-icon" src="{{item.icon}}" mode="aspectFit"></image>
+          <view class="tool-card" wx:for="{{tools}}" wx:key="id" bindtap="navigateTo" data-page="{{item.id}}" hover-class="tool-card-hover">
+            <view class="tool-icon-wrapper">
+              <view class="tool-icon-container {{item.class}}">
+                <image class="tool-icon" src="{{item.icon}}" mode="aspectFit"></image>
+                <view class="icon-glow"></view>
+              </view>
             </view>
             <view class="tool-info">
               <text class="tool-title">{{item.title}}</text>
@@ -65,6 +70,12 @@
             <text class="tip-text">使用高清图片获得更好效果</text>
           </view>
         </view>
+      </view>
+      
+      <!-- 新增功能预告 -->
+      <view class="coming-soon-card">
+        <view class="coming-soon-icon">🚀</view>
+        <view class="coming-soon-text">更多功能即将上线，敬请期待！</view>
       </view>
     </view>
     

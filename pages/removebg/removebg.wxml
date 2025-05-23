@@ -52,17 +52,17 @@
     </view>
     
     <!-- 修改这部分，解决点击图片选择不响应的问题 -->
-    <view class="image-container" hover-class="image-container-hover">
+    <view class="image-container" hover-class="image-container-hover" bindtap="chooseImage">
       <block wx:if="{{tempFilePath}}">
         <image 
           src="{{tempFilePath}}" 
           mode="aspectFit" 
           class="preview-image image-loaded"
-          bindtap="chooseImage"
+          catchtap="chooseImage"
         ></image>
       </block>
       <block wx:else>
-        <view class="empty-image" bindtap="chooseImage">
+        <view class="empty-image">
           <view class="upload-placeholder">
             <view class="upload-icon-large">+</view>
             <text class="upload-text">点击选择图片</text>
