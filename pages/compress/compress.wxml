@@ -115,14 +115,14 @@
         <view class="compare-item">
           <text class="compare-label">原图</text>
           <view class="compare-image-container">
-            <image src="{{tempFilePath}}" mode="aspectFit" class="compare-image"></image>
+            <image src="{{tempFilePath}}" mode="aspectFit" class="compare-image" bindtap="previewImage" data-src="{{tempFilePath}}"></image>
           </view>
         </view>
         <view class="compare-arrow"></view>
         <view class="compare-item">
           <text class="compare-label">压缩后</text>
           <view class="compare-image-container">
-            <image src="{{compressedPath}}" mode="aspectFit" class="compare-image"></image>
+            <image src="{{compressedPath}}" mode="aspectFit" class="compare-image" bindtap="previewImage" data-src="{{compressedPath}}"></image>
           </view>
         </view>
       </view>
