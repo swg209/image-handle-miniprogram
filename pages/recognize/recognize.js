@@ -14,7 +14,7 @@ Page({
     isProcessing: false, // 是否处理中
     recognitionResult: '', // 识别结果
     errorMessage: '', // 错误信息
-    apiKey: '3986dec3-90fc-4f1f-82a1-5bcd383ad3fd' // API密钥
+    apiKey: '' // API密钥
   },
 
   /**
@@ -50,6 +50,29 @@ Page({
   },
 
   /**
+   * 设置API密钥
+   */
+  setApiKey() {
+    wx.showModal({
+      title: '设置API密钥',
+      content: '请输入火山引擎API密钥',
+      editable: true,
+      placeholderText: '例如: 3986dec3-90fc-4f1f-82a1-5bcd383ad3fd',
+      success: (res) => {
+        if (res.confirm && res.content) {
+          // 保存API密钥
+          wx.setStorageSync('ark_api_key', res.content);
+          this.setData({ apiKey: res.content });
+          wx.showToast({
+            title: 'API密钥已保存',
+            icon: 'success'
+          });
+        }
+      }
+    });
+  },
+
+  /**
    * 识别图片
    */
   recognizeImage() {
@@ -57,6 +80,21 @@ Page({
       wx.showToast({
         title: '请先选择图片',
         icon: 'none'
+      });
+      return;
+    }
+
+    // 检查API密钥
+    if (!this.data.apiKey) {
+      wx.showModal({
+        title: '需要API密钥',
+        content: '图片识别功能需要火山引擎API密钥，请先设置',
+        confirmText: '设置',
+        success: (res) => {
+          if (res.confirm) {
+            this.setApiKey();
+          }
+        }
       });
       return;
     }
@@ -213,5 +251,11 @@ Page({
     wx.setNavigationBarTitle({
       title: '图片识别'
     });
+    
+    // 获取保存的API密钥
+    const apiKey = wx.getStorageSync('ark_api_key');
+    if (apiKey) {
+      this.setData({ apiKey });
+    }
   }
 }) 
