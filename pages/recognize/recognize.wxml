@@ -1,85 +1,107 @@
 <!--pages/recognize/recognize.wxml-->
-<view class="container">
-  <view class="tool-section">
-    <view class="section-title">选择图片</view>
-    <view class="image-container">
+<view class="page-container">
+  <!-- 加载状态 -->
+  <view class="loading-overlay" wx:if="{{isProcessing}}">
+    <view class="loading-content">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">正在识别图片...</text>
+    </view>
+  </view>
+
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="page-title">图片识别</view>
+    <view class="page-subtitle">智能识别图片内容和场景</view>
+  </view>
+  
+  <!-- 选择图片区域 -->
+  <view class="card-section">
+    <view class="card-title">
+      <view class="title-icon upload-icon"></view>
+      <text>选择图片</text>
+    </view>
+    
+    <view class="image-container" bindtap="chooseImage" hover-class="image-container-hover">
       <image 
         wx:if="{{tempFilePath}}" 
         src="{{tempFilePath}}" 
         mode="aspectFit" 
-        class="preview-image"
+        class="preview-image {{tempFilePath ? 'image-loaded' : ''}}"
       ></image>
-      <view wx:else class="empty-image" bindtap="chooseImage">
-        <text class="icon">+</text>
-        <text>点击选择图片</text>
+      <view wx:else class="empty-image">
+        <view class="upload-placeholder">
+          <view class="upload-icon-large">+</view>
+          <text class="upload-text">点击选择图片</text>
+        </view>
       </view>
     </view>
-    <button bindtap="chooseImage" class="action-button">选择图片</button>
-  </view>
-
-  <view class="tool-section" wx:if="{{tempFilePath}}">
-    <view class="section-title">识别类型</view>
-    <view class="type-selector">
-      <view 
-        wx:for="{{recognitionTypes}}" 
-        wx:key="id"
-        class="type-item {{item.selected ? 'selected' : ''}}"
-        bindtap="selectType"
-        data-id="{{item.id}}"
-      >
-        <text>{{item.name}}</text>
+    
+    <button bindtap="chooseImage" hover-class="button-hover" class="action-button">
+      <view class="button-content">
+        <view class="button-icon select-icon"></view>
+        <text>{{tempFilePath ? '重新选择' : '选择图片'}}</text>
       </view>
-    </view>
-    <button bindtap="startRecognition" class="action-button" loading="{{isProcessing}}">
-      开始识别
     </button>
   </view>
 
-  <view class="tool-section result-section" wx:if="{{recognitionResult}}">
-    <view class="section-title">识别结果</view>
+  <!-- 识别操作区域 -->
+  <view class="card-section" wx:if="{{tempFilePath && !recognitionResult}}">
+    <view class="card-title">
+      <view class="title-icon recognize-icon"></view>
+      <text>识别选项</text>
+    </view>
     
-    <!-- OCR文字识别结果 -->
-    <block wx:if="{{recognitionResult.type === 'ocr'}}">
-      <view class="result-text-box">
-        <text user-select="true">{{recognitionResult.text}}</text>
-      </view>
-      <button bindtap="copyResult" class="action-button">复制文本</button>
-    </block>
+    <view class="recognition-tips">
+      <view class="tips-icon"></view>
+      <text class="tips-text">上传的图片将通过AI进行分析，识别图片中的内容、场景等信息</text>
+    </view>
     
-    <!-- 物体识别结果 -->
-    <block wx:elif="{{recognitionResult.type === 'object'}}">
-      <view class="object-list">
-        <view wx:for="{{recognitionResult.objects}}" wx:key="index" class="object-item">
-          <text class="object-name">{{item.name}}</text>
-          <view class="confidence-bar-bg">
-            <view class="confidence-bar" style="width: {{item.confidence * 100}}%"></view>
-          </view>
-          <text class="confidence-value">{{item.confidence * 100}}%</text>
-        </view>
+    <button bindtap="recognizeImage" hover-class="button-hover" class="action-button primary">
+      <view class="button-content">
+        <view class="button-icon recognize-action-icon"></view>
+        <text>开始识别</text>
       </view>
-    </block>
+    </button>
+  </view>
+
+  <!-- 识别结果区域 -->
+  <view class="card-section result-section" wx:if="{{recognitionResult}}">
+    <view class="card-title">
+      <view class="title-icon result-icon"></view>
+      <text>识别结果</text>
+    </view>
     
-    <!-- 人脸识别结果 -->
-    <block wx:elif="{{recognitionResult.type === 'face'}}">
-      <view class="face-result">
-        <view class="face-count">
-          <text>检测到 {{recognitionResult.faces.count}} 个人脸</text>
-        </view>
-        <view class="face-attributes">
-          <view class="attribute-item">
-            <text class="attribute-label">性别：</text>
-            <text class="attribute-value">{{recognitionResult.faces.attributes.gender}}</text>
-          </view>
-          <view class="attribute-item">
-            <text class="attribute-label">年龄：</text>
-            <text class="attribute-value">{{recognitionResult.faces.attributes.age}}</text>
-          </view>
-          <view class="attribute-item">
-            <text class="attribute-label">表情：</text>
-            <text class="attribute-value">{{recognitionResult.faces.attributes.expression}}</text>
-          </view>
-        </view>
+    <view class="result-content">
+      <view class="result-text">{{recognitionResult}}</view>
+    </view>
+    
+    <button bindtap="copyResult" hover-class="button-hover" class="action-button">
+      <view class="button-content">
+        <view class="button-icon copy-icon"></view>
+        <text>复制结果</text>
       </view>
-    </block>
+    </button>
+    
+    <button bindtap="resetRecognition" hover-class="button-hover" class="action-button secondary">
+      <view class="button-content">
+        <view class="button-icon reset-icon"></view>
+        <text>重新识别</text>
+      </view>
+    </button>
+  </view>
+
+  <!-- 错误提示 -->
+  <view class="card-section error-section" wx:if="{{errorMessage}}">
+    <view class="error-content">
+      <view class="error-icon"></view>
+      <text class="error-text">{{errorMessage}}</text>
+    </view>
+    
+    <button bindtap="resetRecognition" hover-class="button-hover" class="action-button secondary">
+      <view class="button-content">
+        <view class="button-icon retry-icon"></view>
+        <text>重试</text>
+      </view>
+    </button>
   </view>
 </view> 

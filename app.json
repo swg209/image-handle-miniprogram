@@ -13,5 +13,13 @@
     "navigationBarBackgroundColor": "#ffffff"
   },
   "style": "v2",
-  "sitemapLocation": "sitemap.json"
+  "sitemapLocation": "sitemap.json",
+  "permission": {
+    "scope.camera": {
+      "desc": "用于拍摄照片进行图片识别"
+    },
+    "scope.writePhotosAlbum": {
+      "desc": "用于保存处理后的图片到相册"
+    }
+  }
 }
