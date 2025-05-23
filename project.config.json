@@ -29,7 +29,12 @@
     "swc": false,
     "disableSWC": true,
     "disableUseStrict": false,
-    "useCompilerPlugins": false
+    "useCompilerPlugins": false,
+    "useStaticServer": true,
+    "checkInvalidKey": true,
+    "checkSiteMap": true,
+    "lazyloadPlaceholderEnable": false,
+    "cloudfunctionRoot": "cloudfunctions/"
   },
   "condition": {},
   "editorSetting": {
@@ -37,5 +42,7 @@
     "tabSize": 2
   },
   "appid": "wx1c4de2f5ceffa21d",
+  "cloudfunctionTemplateRoot": "cloudfunctionTemplate/",
+  "cloudfunctionRoot": "cloudfunctions/",
   "simulatorPluginLibVersion": {}
 }

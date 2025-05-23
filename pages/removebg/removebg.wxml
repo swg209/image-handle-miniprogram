@@ -1,44 +1,138 @@
 <!--pages/removebg/removebg.wxml-->
-<view class="container">
-  <view class="tool-section">
-    <view class="section-title">选择图片</view>
-    <view class="image-container">
-      <image 
-        wx:if="{{tempFilePath}}" 
-        src="{{tempFilePath}}" 
-        mode="aspectFit" 
-        class="preview-image"
-      ></image>
-      <view wx:else class="empty-image" bindtap="chooseImage">
-        <text class="icon">+</text>
-        <text>点击选择图片</text>
+<view class="page-container">
+  <!-- 加载状态 -->
+  <view class="loading-overlay" wx:if="{{isProcessing}}">
+    <view class="loading-content">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">{{processingStage || '正在处理...'}}{{processingStage ? '' : ''}}</text>
+      
+      <!-- 进度条 -->
+      <view class="progress-section" wx:if="{{uploadProgress > 0 || downloadProgress > 0}}">
+        <view class="progress-item" wx:if="{{uploadProgress > 0}}">
+          <view class="progress-label">上传进度</view>
+          <progress percent="{{uploadProgress}}" stroke-width="3" activeColor="#4285f4" backgroundColor="#e0e0e0" />
+        </view>
+        <view class="progress-item" wx:if="{{downloadProgress > 0}}">
+          <view class="progress-label">处理进度</view>
+          <progress percent="{{downloadProgress}}" stroke-width="3" activeColor="#34a853" backgroundColor="#e0e0e0" />
+        </view>
       </view>
     </view>
-    <button bindtap="chooseImage" class="action-button">选择图片</button>
   </view>
 
-  <view class="tool-section" wx:if="{{tempFilePath}}">
-    <view class="section-title">去除背景</view>
-    <view class="tips">
-      <text>提示：选择包含清晰物体的图片效果更佳</text>
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="page-title">抠图去背景</view>
+    <view class="page-subtitle">快速抠图，一键去除背景</view>
+  </view>
+  
+  <!-- API Key设置 -->
+  <view class="card-section">
+    <view class="card-title">
+      <view class="title-icon key-icon"></view>
+      <text>API设置</text>
     </view>
-    <button bindtap="removeBackground" class="action-button" loading="{{isProcessing}}">
-      开始抠图
+    
+    <view class="api-status">
+      <text class="api-status-text">API Key状态: {{apiKey ? '已设置' : '未设置'}}</text>
+      <button bindtap="setApiKey" class="api-button">{{apiKey ? '修改API Key' : '设置API Key'}}</button>
+    </view>
+    
+    <view class="tips-container">
+      <view class="tips-icon"></view>
+      <text class="tips-text">提示：您需要在Remove.bg网站注册并获取API Key才能使用抠图功能</text>
+    </view>
+  </view>
+  
+  <!-- 选择图片区域 -->
+  <view class="card-section">
+    <view class="card-title">
+      <view class="title-icon upload-icon"></view>
+      <text>选择图片</text>
+    </view>
+    
+    <!-- 修改这部分，解决点击图片选择不响应的问题 -->
+    <view class="image-container" hover-class="image-container-hover">
+      <block wx:if="{{tempFilePath}}">
+        <image 
+          src="{{tempFilePath}}" 
+          mode="aspectFit" 
+          class="preview-image image-loaded"
+          bindtap="chooseImage"
+        ></image>
+      </block>
+      <block wx:else>
+        <view class="empty-image" bindtap="chooseImage">
+          <view class="upload-placeholder">
+            <view class="upload-icon-large">+</view>
+            <text class="upload-text">点击选择图片</text>
+          </view>
+        </view>
+      </block>
+    </view>
+    
+    <button bindtap="chooseImage" hover-class="button-hover" class="action-button">
+      <view class="button-content">
+        <view class="button-icon select-icon"></view>
+        <text>{{tempFilePath ? '重新选择' : '选择图片'}}</text>
+      </view>
     </button>
   </view>
 
-  <view class="tool-section result-section" wx:if="{{resultPath}}">
-    <view class="section-title">处理结果</view>
-    <view class="images-compare">
-      <view class="compare-item">
-        <text>原图</text>
-        <image src="{{tempFilePath}}" mode="aspectFit"></image>
+  <!-- 处理图片区域 -->
+  <view class="card-section" wx:if="{{tempFilePath}}">
+    <view class="card-title">
+      <view class="title-icon process-icon"></view>
+      <text>去除背景</text>
+    </view>
+    
+    <view class="tips-container">
+      <view class="tips-icon"></view>
+      <text class="tips-text">提示：选择包含清晰物体的图片效果更佳</text>
+    </view>
+    
+    <button bindtap="removeBackground" hover-class="button-hover" class="action-button primary">
+      <view class="button-content">
+        <view class="button-icon remove-icon"></view>
+        <text>开始抠图</text>
       </view>
-      <view class="compare-item">
-        <text>抠图结果</text>
-        <image src="{{resultPath}}" mode="aspectFit" class="transparent-bg"></image>
+    </button>
+    
+    <view class="demo-mode-switch" wx:if="{{useDemoMode}}">
+      <text class="demo-label">当前为演示模式</text>
+    </view>
+  </view>
+
+  <!-- 结果区域 -->
+  <view class="card-section result-section" wx:if="{{resultPath}}">
+    <view class="card-title">
+      <view class="title-icon result-icon"></view>
+      <text>处理结果</text>
+    </view>
+    
+    <view class="comparison-container">
+      <view class="images-compare">
+        <view class="compare-item">
+          <text class="compare-label">原图</text>
+          <view class="compare-image-container">
+            <image src="{{tempFilePath}}" mode="aspectFit" class="compare-image"></image>
+          </view>
+        </view>
+        <view class="compare-arrow"></view>
+        <view class="compare-item">
+          <text class="compare-label">抠图结果</text>
+          <view class="compare-image-container transparent-bg">
+            <image src="{{resultPath}}" mode="aspectFit" class="compare-image"></image>
+          </view>
+        </view>
       </view>
     </view>
-    <button bindtap="saveImage" class="action-button primary">保存图片</button>
+    
+    <button bindtap="saveImage" hover-class="button-hover" class="action-button primary save-button">
+      <view class="button-content">
+        <view class="button-icon save-icon"></view>
+        <text>保存到相册</text>
+      </view>
+    </button>
   </view>
-</view> 
+</view>
